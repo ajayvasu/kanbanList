@@ -20,12 +20,13 @@ Private Sub CommandButton1_Click()
     Set kanbanList = ActiveWorkbook
 
     'The abstract ballet ensues..
-    refreshAll
-    addSheet kanbanList
-    getTodayRows kanbanList
+    'refreshAll
+    'addSheet kanbanList
+    'moveYesterdayRows kanbanList
+    'getTodayRows kanbanList
     formatColumns kanbanList
-    Merge kanbanList
-    deleteYesterday kanbanList
+    'Merge kanbanList
+    'deleteYesterday kanbanList
         
     Application.ScreenUpdating = True
     Application.EnableEvents = True
@@ -49,20 +50,27 @@ Private Sub addSheet(kList)
     kList.Sheets(1).Range("A1").AutoFilter
     
 End Sub
+Private Sub moveYesterdayRows(kList)
 
+    Dim last As Integer
+    last = kList.Sheets(1).Range("F2").End(xlDown).Row
+    
+    kList.Sheets(1).Range("A2:Q" & CStr(last)).Cut kList.Sheets(1).Range("R2")
+
+End Sub
 Private Sub getTodayRows(kList)
     
     Dim i As Integer
     
     'Combine all rows from today & yesterday.
-    kList.Sheets(3).Range("I2:I300").Copy Destination:=kList.Sheets(1).Range("G2")
-    kList.Sheets(3).Range("F2:F300").Copy Destination:=kList.Sheets(1).Range("P2")
-    kList.Sheets(3).Range("A2:B300").Copy Destination:=kList.Sheets(1).Range("H2")
-    kList.Sheets(3).Range("G2:G200").Copy Destination:=kList.Sheets(1).Range("J2")
-    kList.Sheets(3).Range("C2:C300").Copy Destination:=kList.Sheets(1).Range("K2")
-    kList.Sheets(3).Range("E2:E300").Copy Destination:=kList.Sheets(1).Range("O2")
-    kList.Sheets(3).Range("H2:H300").Copy Destination:=kList.Sheets(1).Range("N2")
-    kList.Sheets(3).Range("D2:D300").Copy Destination:=kList.Sheets(1).Range("M2")
+    kList.Sheets(2).Range("I2:I300").Copy Destination:=kList.Sheets(1).Range("G2")
+    kList.Sheets(2).Range("F2:F300").Copy Destination:=kList.Sheets(1).Range("P2")
+    kList.Sheets(2).Range("A2:B300").Copy Destination:=kList.Sheets(1).Range("H2")
+    kList.Sheets(2).Range("G2:G200").Copy Destination:=kList.Sheets(1).Range("J2")
+    kList.Sheets(2).Range("C2:C300").Copy Destination:=kList.Sheets(1).Range("K2")
+    kList.Sheets(2).Range("E2:E300").Copy Destination:=kList.Sheets(1).Range("O2")
+    kList.Sheets(2).Range("H2:H300").Copy Destination:=kList.Sheets(1).Range("N2")
+    kList.Sheets(2).Range("D2:D300").Copy Destination:=kList.Sheets(1).Range("M2")
     
     Dim last As Integer
     last = kList.Sheets(1).Range("G2").End(xlDown).Row
@@ -71,14 +79,14 @@ Private Sub getTodayRows(kList)
         kList.Sheets(1).Cells(i, 6).Value = "RemedyForce"
     Next i
     
-    kList.Sheets(4).Range("AT2:AT300").Copy Destination:=kList.Sheets(1).Range("D" & last + 1)
-    kList.Sheets(4).Range("A2:C300").Copy Destination:=kList.Sheets(1).Range("G" & last + 1)
-    kList.Sheets(4).Range("AJ2:AJ300").Copy Destination:=kList.Sheets(1).Range("J" & last + 1)
-    kList.Sheets(4).Range("J2:J300").Copy Destination:=kList.Sheets(1).Range("K" & last + 1)
-    kList.Sheets(4).Range("Q2:Q300").Copy Destination:=kList.Sheets(1).Range("M" & last + 1)
-    kList.Sheets(4).Range("Z2:Z300").Copy Destination:=kList.Sheets(1).Range("N" & last + 1)
-    kList.Sheets(4).Range("G2:G300").Copy Destination:=kList.Sheets(1).Range("P" & last + 1)
-    kList.Sheets(4).Range("AA2:AA300").Copy Destination:=kList.Sheets(1).Range("Q" & last + 1)
+    kList.Sheets(3).Range("AT2:AT300").Copy Destination:=kList.Sheets(1).Range("D" & last + 1)
+    kList.Sheets(3).Range("A2:C300").Copy Destination:=kList.Sheets(1).Range("G" & last + 1)
+    kList.Sheets(3).Range("AJ2:AJ300").Copy Destination:=kList.Sheets(1).Range("J" & last + 1)
+    kList.Sheets(3).Range("J2:J300").Copy Destination:=kList.Sheets(1).Range("K" & last + 1)
+    kList.Sheets(3).Range("Q2:Q300").Copy Destination:=kList.Sheets(1).Range("M" & last + 1)
+    kList.Sheets(3).Range("Z2:Z300").Copy Destination:=kList.Sheets(1).Range("N" & last + 1)
+    kList.Sheets(3).Range("G2:G300").Copy Destination:=kList.Sheets(1).Range("P" & last + 1)
+    kList.Sheets(3).Range("AA2:AA300").Copy Destination:=kList.Sheets(1).Range("Q" & last + 1)
     
     For i = last + 1 To kList.Sheets(1).Range("G2").End(xlDown).Row
         kList.Sheets(1).Cells(i, 6).Value = "ChaRM"
@@ -124,13 +132,18 @@ Private Sub formatColumns(kList)
         End If
     Next i
     
+    'Color critical dates
+    For i = 2 To 500
+        If DatedDiff("d", Now, kList.Sheets(1).Cells(i, 11).Value) >= 2 Then
+            kList.Sheets(1).Cells(i, 1).Value = "Yes"
+        End If
+    Next i
     'Autofit width of columns (Description is manual)
     kList.Sheets(1).Range("A:G").Columns.AutoFit
     Worksheets(1).Columns("H").ColumnWidth = 30
     Worksheets(1).Columns("D").ColumnWidth = 14
     kList.Sheets(1).Range("I:J").Columns.AutoFit
     kList.Sheets(1).Range("L:Q").Columns.AutoFit
-    kList.Sheets(1).Range("1:1").RowHeight = 20
     kList.Sheets(1).Range("A2").Select
     
 End Sub
@@ -141,9 +154,9 @@ Private Sub Merge(kList)
             If kList.Sheets(1).Cells(j, 9).Value = "Exit" Then
                 kList.Sheets(1).Rows(j).Delete
                 j = j - 1
-            ElseIf kList.Sheets(1).Cells(i, 7).Value = kList.Sheets(2).Cells(j, 7).Value Then
-                kList.Sheets(2).Range("A" & CStr(j) & ":C" & CStr(j)).Copy Destination:=kList.Sheets(1).Range("A" & CStr(i) & ":C" & CStr(i))
-                kList.Sheets(2).Range("E" & CStr(j)).Copy Destination:=kList.Sheets(1).Range("E" & CStr(i))
+            ElseIf kList.Sheets(1).Cells(i, 7).Value = kList.Sheets(1).Cells(j, 24).Value Then
+                kList.Sheets(1).Range("R" & CStr(j) & ":T" & CStr(j)).Copy Destination:=kList.Sheets(1).Range("A" & CStr(i) & ":C" & CStr(i))
+                kList.Sheets(1).Range("V" & CStr(j)).Copy Destination:=kList.Sheets(1).Range("E" & CStr(i))
             End If
         Next j
     Next i
@@ -153,7 +166,15 @@ End Sub
 Private Sub deleteYesterday(kList)
 
     Application.DisplayAlerts = False
-    kList.Sheets(2).Delete
+    
+    'Remove old data
+    Dim last As Integer
+    last = kList.Sheets(1).Range("F2").End(xlDown).Row
+    kList.Sheets(1).Range("R2:AH" & CStr(last)).Delete
+    
+    'Rename the sheet with timestamp
+    kList.Sheets(1).Name = Format(Now(), "DD-MM-YYYY hh-nn-ss")
+    
     Application.DisplayAlerts = True
 
 End Sub
