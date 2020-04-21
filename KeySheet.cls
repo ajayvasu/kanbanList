@@ -1,12 +1,3 @@
-VERSION 1.0 CLASS
-BEGIN
-  MultiUse = -1  'True
-END
-Attribute VB_Name = "Sheet2"
-Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = False
-Attribute VB_PredeclaredId = True
-Attribute VB_Exposed = True
 '**********************************************************
 ' Purpose: i.Consolidate  ii.Merge
 '   i.Consolidate columns of RemedyForce & ChaRM exports
@@ -80,6 +71,7 @@ Private Sub getTodayRows(kList)
         kList.Sheets(1).Cells(i, 6).Value = "RemedyForce"
     Next i
     
+    kList.Sheets(4).Range("AT2:AT300").Copy Destination:=kList.Sheets(1).Range("D" & last + 1)
     kList.Sheets(4).Range("A2:C300").Copy Destination:=kList.Sheets(1).Range("G" & last + 1)
     kList.Sheets(4).Range("AJ2:AJ300").Copy Destination:=kList.Sheets(1).Range("J" & last + 1)
     kList.Sheets(4).Range("J2:J300").Copy Destination:=kList.Sheets(1).Range("K" & last + 1)
@@ -105,11 +97,12 @@ Private Sub formatColumns(kList)
     For i = 2 To 500
         kList.Sheets(1).Range("K" & CStr(i)).NumberFormat = "mm-dd-yyyy"
         kList.Sheets(1).Cells(i, 11).Value = Format(kList.Sheets(1).Cells(i, 11).Value, "dd-mm-yyyy")
+        
         If (kList.Sheets(1).Cells(i, 9).Value = "REGISTERED") Or (kList.Sheets(1).Cells(i, 9).Value = "ASSIGNED") Or (kList.Sheets(1).Cells(i, 9).Value = "Created") Or (kList.Sheets(1).Cells(i, 9).Value = "In Developer QA") Then
             kList.Sheets(1).Cells(i, 9).Value = "Entry"
         ElseIf (kList.Sheets(1).Cells(i, 9).Value = "PLANNED") Or (kList.Sheets(1).Cells(i, 9).Value = "IN PROGRESS") Or (kList.Sheets(1).Cells(i, 9).Value = "Developer QA Completed") Or (kList.Sheets(1).Cells(i, 9).Value = "In Build") Or (kList.Sheets(1).Cells(i, 9).Value = "Build Completed") Or (kList.Sheets(1).Cells(i, 9).Value = "Unit Testing In Process") Or (kList.Sheets(1).Cells(i, 9).Value = "Functional SignOff Failed") Then
             kList.Sheets(1).Cells(i, 9).Value = "In Progress"
-        ElseIf (kList.Sheets(1).Cells(i, 9).Value = "WAITING FOR?") Or (kList.Sheets(1).Cells(i, 9).Value = "WAITING FOR…") Or (kList.Sheets(1).Cells(i, 9).Value = "In Build - Awaiting Input") Then
+        ElseIf (kList.Sheets(1).Cells(i, 9).Value = "WAITING FOR?") Or (kList.Sheets(1).Cells(i, 9).Value = "WAITING FORâ€¦") Or (kList.Sheets(1).Cells(i, 9).Value = "In Build - Awaiting Input") Then
             kList.Sheets(1).Cells(i, 9).Value = "Blocked"
         ElseIf (kList.Sheets(1).Cells(i, 9).Value = "Unit Testing Passed") Or (kList.Sheets(1).Cells(i, 9).Value = "Functional SignOff in Process") Or (kList.Sheets(1).Cells(i, 9).Value = "Functional SignOff Completed") Then
             kList.Sheets(1).Cells(i, 9).Value = "Exit"
@@ -122,14 +115,22 @@ Private Sub formatColumns(kList)
         kList.Sheets(1).Range("L" & CStr(i)).Value = "=COUNTIF(M2:M600, M" & CStr(i) & ")"
     Next i
     
-    'Autofit width of columns (Description is manual
+    'Enter Release info for ChaRM records
+    For i = 2 To 500
+        If kList.Sheets(1).Cells(i, 4).Value = 4 Or kList.Sheets(1).Cells(i, 4).Value = 5 Or kList.Sheets(1).Cells(i, 4).Value = 6 Then
+            kList.Sheets(1).Cells(i, 4).Value = "R" & CStr(kList.Sheets(1).Cells(i, 4).Value)
+        ElseIf InStr(1, kList.Sheets(1).Cells(i, 4).Value, "MT") = 1 Then
+            kList.Sheets(1).Cells(i, 4).Value = "maint"
+        End If
+    Next i
+    
+    'Autofit width of columns (Description is manual)
     kList.Sheets(1).Range("A:G").Columns.AutoFit
     Worksheets(1).Columns("H").ColumnWidth = 30
-    'Worksheets(1).Range("H2").WrapText = True
+    Worksheets(1).Columns("D").ColumnWidth = 14
     kList.Sheets(1).Range("I:J").Columns.AutoFit
     kList.Sheets(1).Range("L:Q").Columns.AutoFit
-    'kList.Sheets(1).Rows("2:2").Select
-    'ActiveWindow.FreezePanes = True
+    kList.Sheets(1).Range("1:1").RowHeight = 20
     kList.Sheets(1).Range("A2").Select
     
 End Sub
@@ -141,7 +142,8 @@ Private Sub Merge(kList)
                 kList.Sheets(1).Rows(j).Delete
                 j = j - 1
             ElseIf kList.Sheets(1).Cells(i, 7).Value = kList.Sheets(2).Cells(j, 7).Value Then
-                kList.Sheets(2).Range("A" & CStr(j) & ":E" & CStr(j)).Copy Destination:=kList.Sheets(1).Range("A" & CStr(i) & ":E" & CStr(i))
+                kList.Sheets(2).Range("A" & CStr(j) & ":C" & CStr(j)).Copy Destination:=kList.Sheets(1).Range("A" & CStr(i) & ":C" & CStr(i))
+                kList.Sheets(2).Range("E" & CStr(j)).Copy Destination:=kList.Sheets(1).Range("E" & CStr(i))
             End If
         Next j
     Next i
