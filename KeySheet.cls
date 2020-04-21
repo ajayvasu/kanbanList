@@ -14,19 +14,18 @@
 
 
 Private Sub CommandButton1_Click()
-     
+
     Application.ScreenUpdating = False
     Application.EnableEvents = False
     Set kanbanList = ActiveWorkbook
 
     'The abstract ballet ensues..
-    'refreshAll
-    'addSheet kanbanList
-    'moveYesterdayRows kanbanList
-    'getTodayRows kanbanList
+    refreshAll
+    moveYesterdayRows kanbanList
+    getTodayRows kanbanList
     formatColumns kanbanList
-    'Merge kanbanList
-    'deleteYesterday kanbanList
+    Merge kanbanList
+    deleteYesterday kanbanList
         
     Application.ScreenUpdating = True
     Application.EnableEvents = True
@@ -42,14 +41,7 @@ Private Sub refreshAll()
     
     
 End Sub
-Private Sub addSheet(kList)
-    
-    kList.Sheets.Add Before:=kList.Sheets(1)
-    kList.Sheets(1).Name = Format(Now(), "DD-MM-YYYY hh-nn-ss")
-    kList.Sheets(2).Range("A1:Q1").Copy Destination:=kList.Sheets(1).Range("A1")
-    kList.Sheets(1).Range("A1").AutoFilter
-    
-End Sub
+
 Private Sub moveYesterdayRows(kList)
 
     Dim last As Integer
@@ -100,9 +92,11 @@ End Sub
 Private Sub formatColumns(kList)
 
     Dim i As Integer
+    Dim last As Integer
+    last = kList.Sheets(1).Range("G2").End(xlDown).Row
     
     'Date formatted, status consolidated; Source filled.
-    For i = 2 To 500
+    For i = 2 To last
         kList.Sheets(1).Range("K" & CStr(i)).NumberFormat = "mm-dd-yyyy"
         kList.Sheets(1).Cells(i, 11).Value = Format(kList.Sheets(1).Cells(i, 11).Value, "dd-mm-yyyy")
         
@@ -119,12 +113,12 @@ Private Sub formatColumns(kList)
     Next i
     
     'Fill Workloads for developers
-    For i = 2 To kList.Sheets(1).Range("G2").End(xlDown).Row
+    For i = 2 To last
         kList.Sheets(1).Range("L" & CStr(i)).Value = "=COUNTIF(M2:M600, M" & CStr(i) & ")"
     Next i
     
     'Enter Release info for ChaRM records
-    For i = 2 To 500
+    For i = 2 To last
         If kList.Sheets(1).Cells(i, 4).Value = 4 Or kList.Sheets(1).Cells(i, 4).Value = 5 Or kList.Sheets(1).Cells(i, 4).Value = 6 Then
             kList.Sheets(1).Cells(i, 4).Value = "R" & CStr(kList.Sheets(1).Cells(i, 4).Value)
         ElseIf InStr(1, kList.Sheets(1).Cells(i, 4).Value, "MT") = 1 Then
@@ -133,24 +127,41 @@ Private Sub formatColumns(kList)
     Next i
     
     'Color critical dates
-    For i = 2 To 500
-        If DatedDiff("d", Now, kList.Sheets(1).Cells(i, 11).Value) >= 2 Then
-            kList.Sheets(1).Cells(i, 1).Value = "Yes"
+    Dim days As Long
+    Dim limit As Long
+    Dim current As Date
+    Dim utdate As Date
+    limit = 2
+    current = now()
+    For i = 2 To last
+        If kList.Sheets(1).Cells(i, 11).Value = "-" Then
+            
+        Else
+            utdate = kList.Sheets(1).Cells(i, 11).Value
+            days = DateDiff("d", current, utdate)
+            If days <= limit And days >= 0 Then
+                kList.Sheets(1).Cells(i, 11).Interior.ColorIndex = 6
+                kList.Sheets(1).Cells(i, 1).Value = days
+            End If
         End If
     Next i
+    
     'Autofit width of columns (Description is manual)
     kList.Sheets(1).Range("A:G").Columns.AutoFit
     Worksheets(1).Columns("H").ColumnWidth = 30
-    Worksheets(1).Columns("D").ColumnWidth = 14
+    Worksheets(1).Columns("D").ColumnWidth = 16
     kList.Sheets(1).Range("I:J").Columns.AutoFit
     kList.Sheets(1).Range("L:Q").Columns.AutoFit
-    kList.Sheets(1).Range("A2").Select
+    'kList.Sheets(1).Range("A2").Select
     
 End Sub
 Private Sub Merge(kList)
     Dim i, j As Integer
-    For i = 2 To kList.Sheets(1).Range("G2").End(xlDown).Row
-        For j = 2 To kList.Sheets(1).Range("G2").End(xlDown).Row
+    Dim last As Integer
+    last = kList.Sheets(1).Range("G2").End(xlDown).Row
+    
+    For i = 2 To last
+        For j = 2 To last
             If kList.Sheets(1).Cells(j, 9).Value = "Exit" Then
                 kList.Sheets(1).Rows(j).Delete
                 j = j - 1
@@ -173,9 +184,10 @@ Private Sub deleteYesterday(kList)
     kList.Sheets(1).Range("R2:AH" & CStr(last)).Delete
     
     'Rename the sheet with timestamp
-    kList.Sheets(1).Name = Format(Now(), "DD-MM-YYYY hh-nn-ss")
+    kList.Sheets(1).Name = Format(now(), "DD-MM-YYYY hh-nn-ss")
     
     Application.DisplayAlerts = True
 
 End Sub
+
 
