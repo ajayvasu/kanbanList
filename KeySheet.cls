@@ -1,3 +1,4 @@
+
 '**********************************************************
 ' Purpose: i.Consolidate  ii.Merge
 '   i.Consolidate columns of RemedyForce & ChaRM exports
@@ -126,22 +127,32 @@ Private Sub formatColumns(kList)
         End If
     Next i
     
+    'Resolve blank dates
+    For i = 2 To last
+        If kList.Sheets(1).Cells(i, 11).Value = "-" Then
+            kList.Sheets(1).Cells(i, 11).Value = ""
+        End If
+    Next i
+    
     'Color critical dates
     Dim days As Long
     Dim limit As Long
     Dim current As Date
     Dim utdate As Date
-    limit = 2
+    limit = 3
     current = now()
     For i = 2 To last
-        If kList.Sheets(1).Cells(i, 11).Value = "-" Then
-            
+        If kList.Sheets(1).Cells(i, 11).Value = "" Then
+            If kList.Sheets(1).Cells(i, 9).Value <> "Entry" Then
+                kList.Sheets(1).Cells(i, 11).Interior.ColorIndex = 46
+            End If
         Else
             utdate = kList.Sheets(1).Cells(i, 11).Value
             days = DateDiff("d", current, utdate)
             If days <= limit And days >= 0 Then
-                kList.Sheets(1).Cells(i, 11).Interior.ColorIndex = 6
-                kList.Sheets(1).Cells(i, 1).Value = days
+                kList.Sheets(1).Cells(i, 11).Interior.ColorIndex = 36
+            ElseIf days < 0 And kList.Sheets(1).Cells(i, 9).Value <> "Entry" Then
+                kList.Sheets(1).Cells(i, 11).Interior.ColorIndex = 46
             End If
         End If
     Next i
@@ -157,11 +168,13 @@ Private Sub formatColumns(kList)
 End Sub
 Private Sub Merge(kList)
     Dim i, j As Integer
-    Dim last As Integer
-    last = kList.Sheets(1).Range("G2").End(xlDown).Row
+    Dim lastNew As Integer
+    Dim lastOld As Integer
+    lastNew = kList.Sheets(1).Range("G2").End(xlDown).Row
+    lastOld = kList.Sheets(1).Range("X2").End(xlDown).Row
     
-    For i = 2 To last
-        For j = 2 To last
+    For i = 2 To lastNew
+        For j = 2 To lastOld
             If kList.Sheets(1).Cells(j, 9).Value = "Exit" Then
                 kList.Sheets(1).Rows(j).Delete
                 j = j - 1
@@ -180,7 +193,7 @@ Private Sub deleteYesterday(kList)
     
     'Remove old data
     Dim last As Integer
-    last = kList.Sheets(1).Range("F2").End(xlDown).Row
+    last = kList.Sheets(1).Range("X2").End(xlDown).Row
     kList.Sheets(1).Range("R2:AH" & CStr(last)).Delete
     
     'Rename the sheet with timestamp
@@ -189,5 +202,4 @@ Private Sub deleteYesterday(kList)
     Application.DisplayAlerts = True
 
 End Sub
-
 
