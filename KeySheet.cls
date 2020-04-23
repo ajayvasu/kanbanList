@@ -1,4 +1,3 @@
-
 '**********************************************************
 ' Purpose: i.Consolidate  ii.Merge
 '   i.Consolidate columns of RemedyForce & ChaRM exports
@@ -19,7 +18,7 @@ Private Sub CommandButton1_Click()
     Application.ScreenUpdating = False
     Application.EnableEvents = False
     Set kanbanList = ActiveWorkbook
-
+    
     'The abstract ballet ensues..
     refreshAll
     moveYesterdayRows kanbanList
@@ -51,6 +50,7 @@ Private Sub moveYesterdayRows(kList)
     kList.Sheets(1).Range("A2:Q" & CStr(last)).Cut kList.Sheets(1).Range("R2")
 
 End Sub
+
 Private Sub getTodayRows(kList)
     
     Dim i As Integer
@@ -98,8 +98,8 @@ Private Sub formatColumns(kList)
     
     'Date formatted, status consolidated; Source filled.
     For i = 2 To last
-        kList.Sheets(1).Range("K" & CStr(i)).NumberFormat = "mm-dd-yyyy"
-        kList.Sheets(1).Cells(i, 11).Value = Format(kList.Sheets(1).Cells(i, 11).Value, "dd-mm-yyyy")
+        'kList.Sheets(1).Range("K" & CStr(i)).NumberFormat = "mm-dd-yyyy"
+        kList.Sheets(1).Cells(i, 11).Value = Format(kList.Sheets(1).Cells(i, 11).Value, "mm-dd-yyyy")
         
         If (kList.Sheets(1).Cells(i, 9).Value = "REGISTERED") Or (kList.Sheets(1).Cells(i, 9).Value = "ASSIGNED") Or (kList.Sheets(1).Cells(i, 9).Value = "Created") Or (kList.Sheets(1).Cells(i, 9).Value = "In Developer QA") Then
             kList.Sheets(1).Cells(i, 9).Value = "Entry"
@@ -126,6 +126,12 @@ Private Sub formatColumns(kList)
             kList.Sheets(1).Cells(i, 4).Value = "maint"
         End If
     Next i
+    For i = 2 To last
+        If Left(kList.Sheets(1).Cells(i, 7).Value, 1) = 5 Then
+            kList.Sheets(1).Cells(i, 4).Value = "maint"
+        End If
+    Next i
+    
     
     'Resolve blank dates
     For i = 2 To last
@@ -140,19 +146,19 @@ Private Sub formatColumns(kList)
     Dim current As Date
     Dim utdate As Date
     limit = 3
-    current = now()
+    current = Now()
     For i = 2 To last
         If kList.Sheets(1).Cells(i, 11).Value = "" Then
             If kList.Sheets(1).Cells(i, 9).Value <> "Entry" Then
-                kList.Sheets(1).Cells(i, 11).Interior.ColorIndex = 46
+                kList.Sheets(1).Cells(i, 11).Interior.ColorIndex = 3
             End If
         Else
             utdate = kList.Sheets(1).Cells(i, 11).Value
             days = DateDiff("d", current, utdate)
             If days <= limit And days >= 0 Then
-                kList.Sheets(1).Cells(i, 11).Interior.ColorIndex = 36
+                kList.Sheets(1).Cells(i, 11).Interior.ColorIndex = 6
             ElseIf days < 0 And kList.Sheets(1).Cells(i, 9).Value <> "Entry" Then
-                kList.Sheets(1).Cells(i, 11).Interior.ColorIndex = 46
+                kList.Sheets(1).Cells(i, 11).Interior.ColorIndex = 3
             End If
         End If
     Next i
@@ -161,12 +167,15 @@ Private Sub formatColumns(kList)
     kList.Sheets(1).Range("A:G").Columns.AutoFit
     Worksheets(1).Columns("H").ColumnWidth = 30
     Worksheets(1).Columns("D").ColumnWidth = 16
+    Worksheets(1).Columns("F").ColumnWidth = 12
+    Worksheets(1).Columns("L").ColumnWidth = 3
     kList.Sheets(1).Range("I:J").Columns.AutoFit
     kList.Sheets(1).Range("L:Q").Columns.AutoFit
-    'kList.Sheets(1).Range("A2").Select
     
 End Sub
+
 Private Sub Merge(kList)
+
     Dim i, j As Integer
     Dim lastNew As Integer
     Dim lastOld As Integer
@@ -197,7 +206,7 @@ Private Sub deleteYesterday(kList)
     kList.Sheets(1).Range("R2:AH" & CStr(last)).Delete
     
     'Rename the sheet with timestamp
-    kList.Sheets(1).Name = Format(now(), "DD-MM-YYYY hh-nn-ss")
+    kList.Sheets(1).Name = Format(Now(), "DD-MM-YYYY hh-nn-ss")
     
     Application.DisplayAlerts = True
 
