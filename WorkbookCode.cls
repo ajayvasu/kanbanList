@@ -1,31 +1,54 @@
-VERSION 1.0 CLASS
-BEGIN
-  MultiUse = -1  'True
-END
-Attribute VB_Name = "ThisWorkbook"
-Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = False
-Attribute VB_PredeclaredId = True
-Attribute VB_Exposed = True
-Private Sub Workbook_SheetChange(ByVal Sh As Object, ByVal Target As Range)
+Public Sub CommandButton1_Click()
+    Worksheets(1).Range("A1").AutoFilter _
+    Field:=4, _
+    Criteria1:="R4", _
+    VisibleDropDown:=False
 
-    Dim changedCell As String
-    changedCell = Target.Address(False, False)
-    'Range("A5").Value = changedCell
-    Application.EnableEvents = False
-    If Sh.Index = 1 Then
-        If Not Intersect(Target, Sheets(1).Range("B2:B600")) Is Nothing Then
-            
-            If Range(changedCell).Value <> "" Then
-                Range(changedCell).Interior.ColorIndex = 6
-            Else
-                Range(changedCell).Interior.ColorIndex = 0
-            End If
-            
-        End If
-    End If
-    Application.EnableEvents = True
+End Sub
+
+Public Sub CommandButton2_Click()
+    Worksheets(1).Range("A1").AutoFilter _
+    Field:=4, _
+    Criteria1:="R5", _
+    VisibleDropDown:=False
+End Sub
+
+Public Sub CommandButton3_Click()
+    Worksheets(1).Range("A1").AutoFilter _
+    Field:=4, _
+    Criteria1:="R6", _
+    VisibleDropDown:=False
+End Sub
+
+Public Sub CommandButton4_Click()
+    Worksheets(1).Range("A1").AutoFilter _
+    Field:=4, _
+    Criteria1:="maint", _
+    VisibleDropDown:=False
+End Sub
+
+Public Sub CommandButton5_Click()
+    Worksheets(1).Range("A1").AutoFilter
+    Worksheets(1).Range("A1").AutoFilter
 End Sub
 
 
 
+Private Sub CommandButton6_Click()
+    Worksheets(1).Range("A1").AutoFilter _
+    Field:=6, _
+    Criteria1:="RemedyForce", _
+    VisibleDropDown:=False
+End Sub
+
+Private Sub CommandButton7_Click()
+    Worksheets(1).Range("A1").AutoFilter _
+    Field:=6, _
+    Criteria1:="ChaRM", _
+    VisibleDropDown:=False
+End Sub
+
+Private Sub CommandButton8_Click()
+    Worksheets(1).Range("A1").AutoFilter
+    Worksheets(1).Range("A1").AutoFilter
+End Sub
