@@ -70,6 +70,7 @@ Private Sub getTodayRows(kList)
     
     For i = 2 To last
         kList.Sheets(1).Cells(i, 6).Value = "RemedyForce"
+        kList.Sheets(1).Cells(i, 11).Value = Format(kList.Sheets(1).Cells(i, 11).Value, "dd-mm-yyyy")
     Next i
     
     kList.Sheets(3).Range("AT2:AT300").Copy Destination:=kList.Sheets(1).Range("D" & last + 1)
@@ -83,6 +84,7 @@ Private Sub getTodayRows(kList)
     
     For i = last + 1 To kList.Sheets(1).Range("G2").End(xlDown).Row
         kList.Sheets(1).Cells(i, 6).Value = "ChaRM"
+        kList.Sheets(1).Cells(i, 11).Value = Format(kList.Sheets(1).Cells(i, 11).Value, "mm-dd-yyyy")
     Next i
     
     'Remaining Change Manager Blanks filled with Klaus Karkov
@@ -96,11 +98,9 @@ Private Sub formatColumns(kList)
     Dim last As Integer
     last = kList.Sheets(1).Range("G2").End(xlDown).Row
     
-    'Date formatted, status consolidated; Source filled.
+    'Status consolidated; Source filled.
     For i = 2 To last
-        'kList.Sheets(1).Range("K" & CStr(i)).NumberFormat = "mm-dd-yyyy"
-        kList.Sheets(1).Cells(i, 11).Value = Format(kList.Sheets(1).Cells(i, 11).Value, "mm-dd-yyyy")
-        
+
         If (kList.Sheets(1).Cells(i, 9).Value = "REGISTERED") Or (kList.Sheets(1).Cells(i, 9).Value = "ASSIGNED") Or (kList.Sheets(1).Cells(i, 9).Value = "Created") Or (kList.Sheets(1).Cells(i, 9).Value = "In Developer QA") Then
             kList.Sheets(1).Cells(i, 9).Value = "Entry"
         ElseIf (kList.Sheets(1).Cells(i, 9).Value = "PLANNED") Or (kList.Sheets(1).Cells(i, 9).Value = "IN PROGRESS") Or (kList.Sheets(1).Cells(i, 9).Value = "Developer QA Completed") Or (kList.Sheets(1).Cells(i, 9).Value = "In Build") Or (kList.Sheets(1).Cells(i, 9).Value = "Build Completed") Or (kList.Sheets(1).Cells(i, 9).Value = "Unit Testing In Process") Or (kList.Sheets(1).Cells(i, 9).Value = "Functional SignOff Failed") Then

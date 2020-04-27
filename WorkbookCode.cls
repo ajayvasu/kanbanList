@@ -32,8 +32,6 @@ Public Sub CommandButton5_Click()
     Worksheets(1).Range("A1").AutoFilter
 End Sub
 
-
-
 Private Sub CommandButton6_Click()
     Worksheets(1).Range("A1").AutoFilter _
     Field:=6, _
@@ -49,6 +47,25 @@ Private Sub CommandButton7_Click()
 End Sub
 
 Private Sub CommandButton8_Click()
+    Worksheets(1).Range("A1").AutoFilter
+    Worksheets(1).Range("A1").AutoFilter
+End Sub
+
+Private Sub CommandButton9_Click()
+    Worksheets(1).Range("A1").AutoFilter _
+    Field:=17, _
+    Criteria1:="Klaus Karkov", _
+    VisibleDropDown:=False
+End Sub
+
+Private Sub CommandButton10_Click()
+    Worksheets(1).Range("A1").AutoFilter _
+    Field:=17, _
+    Criteria1:="James Stoker", _
+    VisibleDropDown:=False
+End Sub
+
+Private Sub CommandButton11_Click()
     Worksheets(1).Range("A1").AutoFilter
     Worksheets(1).Range("A1").AutoFilter
 End Sub
